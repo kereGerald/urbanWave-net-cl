@@ -1,0 +1,4 @@
+node_modules/
+release/
+electron/icon.png
+electron/icon.ico

@@ -8,20 +8,33 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win --x64 --publish never",
-    "release:win": "electron-builder --win --x64 --publish always"
+    "prestart": "node scripts/generate-icon.mjs",
+    "generate-icon": "node scripts/generate-icon.mjs",
+    "dist:win": "npm run generate-icon && electron-builder --win --x64 --publish never",
+    "release:win": "npm run generate-icon && electron-builder --win --x64 --publish always"
   },
   "devDependencies": {
     "electron": "^33.2.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.4"
   },
   "build": {
     "appId": "com.urbanwavenet.desktop",
     "productName": "UrbanWave Net",
-    "copyright": "Copyright \u00a9 2026 UrbanWave Net Technologies",
-    "directories": { "output": "release" },
-    "files": ["electron/**/*"],
-    "publish": [{ "provider": "github" }],
+    "copyright": "Copyright © 2026 UrbanWave Net Technologies",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "!electron/urbanwave-logo.svg"
+    ],
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ],
     "win": {
       "target": [
         { "target": "nsis", "arch": ["x64"] },
