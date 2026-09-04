@@ -26,12 +26,19 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Windows installer + portable exe
         run: npm run dist:win
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          # Authenticode signing — no-ops safely if these secrets are unset.
+          # Set WIN_CSC_LINK (base64-encoded .pfx) and WIN_CSC_KEY_PASSWORD
+          # in this repo's Settings → Secrets and variables → Actions once a
+          # code-signing certificate has been obtained. See README "Code
+          # signing" section for what's required before that's possible.
+          CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
@@ -53,3 +60,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
