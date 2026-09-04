@@ -1,0 +1,55 @@
+name: Build Windows Installer
+
+"on":
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # needed only for the release-publish step on tag pushes
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Windows installer + portable exe
+        run: npm run dist:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UrbanWave-Net-Setup
+          path: release/UrbanWave Net Setup *.exe
+          if-no-files-found: error
+
+      - name: Upload portable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UrbanWave-Net-Portable
+          path: release/UrbanWave Net Portable *.exe
+          if-no-files-found: error
+
+      - name: Publish to GitHub Release (tag pushes only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: npm run release:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false

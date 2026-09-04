@@ -1,0 +1,50 @@
+{
+  "name": "urbanwave-desktop",
+  "productName": "UrbanWave Net",
+  "version": "1.0.0",
+  "description": "UrbanWave Net billing and management desktop client",
+  "main": "electron/main.js",
+  "author": "UrbanWave Net Technologies",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win --x64 --publish never",
+    "release:win": "electron-builder --win --x64 --publish always"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.urbanwavenet.desktop",
+    "productName": "UrbanWave Net",
+    "copyright": "Copyright \u00a9 2026 UrbanWave Net Technologies",
+    "directories": { "output": "release" },
+    "files": ["electron/**/*"],
+    "publish": [{ "provider": "github" }],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "electron/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "portable": {
+      "artifactName": "UrbanWave Net Portable ${version}.${ext}"
+    },
+    "nsis": {
+      "artifactName": "UrbanWave Net Setup ${version}.${ext}",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "UrbanWave Net",
+      "uninstallDisplayName": "${productName}",
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "electron/icon.ico",
+      "uninstallerIcon": "electron/icon.ico"
+    }
+  }
+}

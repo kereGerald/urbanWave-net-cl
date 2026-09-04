@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Connection Settings</title>
+<style>
+  body {
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #0b1220;
+    color: #e6ecf5;
+    margin: 0;
+    padding: 24px;
+  }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  p.hint { color: #9aa8bd; font-size: 13px; margin: 0 0 16px; }
+  label { display: block; font-size: 12px; color: #9aa8bd; margin-bottom: 6px; }
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #263353;
+    background: #101828;
+    color: #e6ecf5;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .row { display: flex; gap: 10px; margin-top: 8px; }
+  button {
+    font: inherit;
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .primary { background: #3b82f6; color: white; }
+  .secondary { background: #1c2740; color: #cdd8ea; }
+  #status { font-size: 12px; margin-top: 10px; min-height: 16px; }
+  .err { color: #f87171; }
+  .ok { color: #4ade80; }
+</style>
+</head>
+<body>
+  <h1>Connection Settings</h1>
+  <p class="hint">This is the server your UrbanWave Net app connects to. Only change this if you've been told to point it somewhere other than the default.</p>
+  <label for="origin">Server URL</label>
+  <input id="origin" type="text" placeholder="https://your-server.example.com" />
+  <div class="row">
+    <button class="primary" id="saveBtn">Save &amp; Reload</button>
+    <button class="secondary" id="resetBtn">Reset to Default</button>
+  </div>
+  <div id="status"></div>
+
+  <script>
+    const originInput = document.getElementById('origin');
+    const status = document.getElementById('status');
+
+    async function load() {
+      const cfg = await window.urbanwaveDesktop.getConfig();
+      originInput.value = cfg.origin;
+    }
+    load();
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      status.textContent = '';
+      try {
+        await window.urbanwaveDesktop.setConfig(originInput.value);
+        status.textContent = 'Saved. Main window is reloading…';
+        status.className = 'ok';
+      } catch (e) {
+        status.textContent = e.message || 'Could not save that URL.';
+        status.className = 'err';
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', async () => {
+      const def = await window.urbanwaveDesktop.getDefaultOrigin();
+      originInput.value = def;
+      await window.urbanwaveDesktop.setConfig(def);
+      status.textContent = 'Reset to default. Main window is reloading…';
+      status.className = 'ok';
+    });
+  </script>
+</body>
+</html>
